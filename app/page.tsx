@@ -53,7 +53,7 @@ export default function Page() {
         }} onSelect={(id: number) => setSelectedNote(id)}/>
       </div>
       <div>
-        <textarea className="w-full h-full p-4" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
+        <textarea className="w-full h-full p-4 bg-white" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
           const value = e.target.value;
           setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: value} : n))
         }}/>

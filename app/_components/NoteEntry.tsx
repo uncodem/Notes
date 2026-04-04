@@ -9,10 +9,9 @@ type NotesEntryParams = {
 
 export default function NoteEntry({note, onToggleExpand, onSelect}: NotesEntryParams) {
     return (
-        <div className="p-2 border b">
+        <div className="p-2 border-single border-2 border-white rounded-lg m-2 bg-gray-200">
             <div className="flex justify-between">
                 <button onClick={onSelect}>{note.title}</button>
-                <button onClick={onToggleExpand}>{note.expanded ? "-" : "+"}</button>
                 
             {note.expanded && (
                 <div className="mt-2">
@@ -25,6 +24,7 @@ export default function NoteEntry({note, onToggleExpand, onSelect}: NotesEntryPa
                     ))}
                 </div>
             )}
+                <button onClick={onToggleExpand}>{note.expanded ? "-" : "+"}</button>
             </div>
         </div>
     );
