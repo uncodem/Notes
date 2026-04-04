@@ -22,22 +22,22 @@ export default function Page() {
   ]);
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
-  const [contents, setContent] = useState({});
-  const [debounced, setDebounced] = useState(contents);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebounced(contents)
-    }, 2000);
-    return () => clearTimeout(timeout);
-  }, [contents]);
-
-  useEffect(() => {
-    if (!debounced) return
-    console.log("Autosave: ", debounced);
-  }, [debounced]);
 
   const currentNote = notes.find(n => n.id === selectedNote);
+  const noteId = currentNote?.id;
+  const content = currentNote?.content;
+
+  useEffect(() => {
+    if (!noteId) return;
+    const timeout = setTimeout(() => {
+      console.log("Autosave : ", {
+        id: noteId,
+        content
+      });
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [noteId, content]);
+
 
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
@@ -49,10 +49,9 @@ export default function Page() {
         }} onSelect={(id) => setSelectedNote(id)}/>
       </div>
       <div>
-        <textarea className="w-full h-full p-4" value={currentNote?.content || ""} onChange={(e) => {
+        <textarea className="w-full h-full p-4" disabled={!currentNote} value={currentNote?.content || ""} onChange={(e) => {
           const value = e.target.value;
           setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: value} : n))
-          setContent({selectedNote, value});
         }}/>
       </div>
     </div>
