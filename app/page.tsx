@@ -2,6 +2,10 @@
 import {useEffect, useState} from "react";
 import NotesList from "./_components/NotesList";
 
+function save(v) {
+  console.log("Autosave : ", {v})
+}
+
 export default function Page() {
 
   const [notes, setNotes] = useState([
@@ -29,14 +33,13 @@ export default function Page() {
 
   useEffect(() => {
     if (!noteId) return;
-    const timeout = setTimeout(() => {
-      console.log("Autosave : ", {
-        id: noteId,
-        content
-      });
-    }, 2000);
-    return () => clearTimeout(timeout);
-  }, [noteId, content]);
+    const id = noteId;
+    const timeout = setTimeout(() => save({id, content}), 2000);
+    return () => {
+      if (id !== selectedNote) save({id, content});
+      clearTimeout(timeout);
+    }
+  }, [noteId, content, selectedNote]);
 
 
   return (
@@ -49,7 +52,7 @@ export default function Page() {
         }} onSelect={(id) => setSelectedNote(id)}/>
       </div>
       <div>
-        <textarea className="w-full h-full p-4" disabled={!currentNote} value={currentNote?.content || ""} onChange={(e) => {
+        <textarea className="w-full h-full p-4" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
           const value = e.target.value;
           setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: value} : n))
         }}/>
