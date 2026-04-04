@@ -1,5 +1,3 @@
-'use client';
-
 import {Entry} from "../_lib/Entry";
 import NoteEntry from "./NoteEntry";
 
