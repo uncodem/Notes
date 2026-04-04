@@ -1,6 +1,13 @@
-'use client';
+import {Entry} from "../_lib/Entry";
+import {MouseEventHandler} from "react";
 
-export default function NoteEntry({note, onToggleExpand, onSelect}) {
+type NotesEntryParams = {
+    note: Entry,
+    onToggleExpand: MouseEventHandler,
+    onSelect: MouseEventHandler,
+};
+
+export default function NoteEntry({note, onToggleExpand, onSelect}: NotesEntryParams) {
     return (
         <div className="p-2 border b">
             <div className="flex justify-between">

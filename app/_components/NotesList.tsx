@@ -1,8 +1,15 @@
 'use client';
 
+import {Entry} from "../_lib/Entry";
 import NoteEntry from "./NoteEntry";
 
-export default function NotesList({notes, onToggleExpand, onSelect}) {
+type NotesListParams = {
+    notes: Entry[],
+    onToggleExpand: (_: number) => void,
+    onSelect: (_: number) => void,
+};
+
+export default function NotesList({notes, onToggleExpand, onSelect}: NotesListParams) {
     return (
         <div>
             {notes.map(note => {

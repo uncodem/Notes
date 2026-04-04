@@ -1,14 +1,15 @@
 'use client';
 import {useEffect, useState} from "react";
 import NotesList from "./_components/NotesList";
+import {Entry} from "./_lib/Entry";
 
-function save(v) {
+function save(v: object) {
   console.log("Autosave : ", {v})
 }
 
 export default function Page() {
 
-  const [notes, setNotes] = useState([
+  const [notes, setNotes] = useState<Entry[]>([
     {
       id: 1,
       title: "First note",
@@ -45,11 +46,11 @@ export default function Page() {
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
       <div className="border-r">
-        <NotesList notes={notes} onToggleExpand={(id) => {
+        <NotesList notes={notes} onToggleExpand={(id: number) => {
           setNotes(prev => 
             prev.map(n => n.id === id ? {...n, expanded: !n.expanded} : n)
           );
-        }} onSelect={(id) => setSelectedNote(id)}/>
+        }} onSelect={(id: number) => setSelectedNote(id)}/>
       </div>
       <div>
         <textarea className="w-full h-full p-4" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
