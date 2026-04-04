@@ -22,7 +22,7 @@ export default function Page() {
   ]);
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
-  const [contents, setContent] = useState("");
+  const [contents, setContent] = useState({});
   const [debounced, setDebounced] = useState(contents);
 
   useEffect(() => {
@@ -49,7 +49,11 @@ export default function Page() {
         }} onSelect={(id) => setSelectedNote(id)}/>
       </div>
       <div>
-        <textarea className="w-full h-full p-4" value={currentNote?.content || ""} onChange={(e) => setContent(e.target.value)}/>
+        <textarea className="w-full h-full p-4" value={currentNote?.content || ""} onChange={(e) => {
+          const value = e.target.value;
+          setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: value} : n))
+          setContent({selectedNote, value});
+        }}/>
       </div>
     </div>
   );
