@@ -1,5 +1,13 @@
 'use client';
 
-export default function NotesList() {
-    return <h1>Note Entry</h1>;
+import NoteEntry from "./NoteEntry";
+
+export default function NotesList({notes, onToggleExpand, onSelect}) {
+    return (
+        <div>
+            {notes.map(note => {
+                return <NoteEntry key={note.id} note={note} onToggleExpand={() => onToggleExpand(note.id)} onSelect={() => onSelect(note.id)}></NoteEntry>
+            })}
+        </div>
+    );
 }
