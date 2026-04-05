@@ -38,10 +38,15 @@ export default function Page() {
       content: undefined
   });
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (!noteId) return;
-    const timeout = setTimeout(() => save({id: noteId, content, time: Date.now()}), 2000);
-    return () => clearTimeout(timeout);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => save({id: noteId, content, time: Date.now()}), 2000);
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, [noteId, content]);
 
   useEffect(() => {
@@ -78,6 +83,7 @@ export default function Page() {
 
   function handleSelect(id: number) {
     const prev = prevNoteRef.current;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (prev.id !== null) {
       save({
         id: prev.id,
