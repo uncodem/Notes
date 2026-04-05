@@ -77,7 +77,7 @@ const tagNoteTxn = db.transaction((id: number, rawTag: string) => {
     insertTag.run(tag);
     const tagRow = getTagId.get(tag);
     if (!tagRow) throw new Error("Tag lookup failed");
-    linkTag.run(id, tagRow.id);
+    linkTag.run(id, (tagRow as {id: number}).id);
 });
 
 const untagNoteTxn = db.transaction((id: number, rawTag: string) => {
@@ -88,10 +88,10 @@ const untagNoteTxn = db.transaction((id: number, rawTag: string) => {
 });
 
 export function getFullNote(id: number): Entry|null {
-    const note: {content: string, id: number, title: string}|null = getNoteById.get(id);
+    const note = getNoteById.get(id);
     if (!note) return null;
-    const tags = listNoteTags.all(id).map(t => t.name);
-    return {...note, tags};
+    const tags = listNoteTags.all(id).map((t => (t as {name: string}).name));
+    return {...(note as Entry), tags};
 }
 
 export function tagNote(id: number, rawTag: string) {
