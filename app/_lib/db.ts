@@ -24,3 +24,59 @@ db.run(`
         FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
     );
 `);
+
+const insertNote = db.prepare("INSERT INTO notes (title, content, updated_at) VALUES (?, '', ?)");
+const updateNote = db.prepare(`
+    UPDATE notes SET content = ?, updated_at = ?
+    WHERE id = ? AND (updated_at IS NULL or updated_at < ?)
+`);
+
+const insertTag = db.prepare(`
+    INSERT INTO tags (name)
+    VALUES (?)
+    ON CONFLICT(name) DO NOTHING
+`);
+
+const getTagId = db.prepare("SELECT id FROM tags WHERE name = ?");
+
+const linkTag = db.prepare(`
+    INSERT INTO note_tags (note_id, tag_id)
+    VALUES (?, ?)
+    ON CONFLICT(note_id, tag_id) DO NOTHING
+`);
+
+const unlinkTag = db.prepare(`
+    DELETE FROM note_tags
+    WHERE note_id = ? AND tag_id = ?
+`);
+
+const listNoteTags = db.prepare(`
+    SELECT t.name FROM tags t
+    JOIN note_tags nt ON t.id = nt.tag_id
+    WHERE nt.note_id = ?
+`);
+
+const getNotes = db.prepare(`SELECT id, title FROM notes`);
+const getNoteById = db.prepare(`SELECT id, title, content FROM notes WHERE id = ?`);
+
+const tagNoteTxn = db.transaction((id: number, rawTag: string) => {
+    const tag = rawTag.toLowerCase();
+    insertTag.run(tag);
+    const tagRow = getTagId.get(tag);
+    if (!tagRow) throw new Error("Tag lookup failed");
+    linkTag.run(id, tagRow.id);
+});
+
+const untagNoteTxn = db.transaction((id: number, rawTag: string) => {
+    const tag = rawTag.toLowerCase();
+    const row = getTagId.get(tag) as {id: number} | undefined;
+    if (!row) return;
+    unlinkTag.run(id, row.id);
+});
+
+export function getFullNote(id: number) {
+    const note = getNoteById.get(id);
+    if (!note) return null;
+    const tags = listNoteTags.all(id).map(t => t.name);
+    return {...note, tags};
+}
