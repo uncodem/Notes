@@ -108,7 +108,7 @@ export function getAllNotes() {
 export function addNewNote(title: string, updated_at: number) {
     const res = insertNote.run(title, updated_at);
     return {
-        id: res.lastInsertRowId,
+        id: res.lastInsertRowid,
         title: title,
         content: "",
         tags: []
