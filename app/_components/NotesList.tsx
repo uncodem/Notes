@@ -12,7 +12,7 @@ type NotesListParams = {
 
 export default function NotesList({notes, onToggleExpand, onSelect, onNoteAdd, onTagAdd, onTagDelete}: NotesListParams) {
     return (
-        <div className="bg-gray-180 h-full text-center">
+        <div className="bg-gray-100 h-full text-center">
             <h1 className="text-4xl font-bold">Notes</h1>
             {notes.map(note => {
                 return <NoteEntry key={note.id} note={note} 

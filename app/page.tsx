@@ -45,8 +45,12 @@ export default function Page() {
   useEffect(() => {
     async function fn() {
       const res = await fetch("/api/notes");
-      const entries = await res.json();
-      setNotes(entries.map((e: Entry) => ({...e, expanded: false})));
+      const {ok, notes, error} = await res.json();
+      if (!ok) {
+        alert(error);
+        return
+      }
+      setNotes(notes.map((e: Entry) => ({...e, expanded: false})));
     }
     fn();
   }, []);
@@ -69,10 +73,12 @@ export default function Page() {
     const title = name ? name : `Untitled-Note`;
 
     const res = await fetch("/api/notes", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({title})});
-    const {ok, entry} = await res.json();
+    const {ok, entry, error} = await res.json();
     if (ok) {
       setNotes(prev => [...prev, {...entry, expanded: false}]);
       await handleSelect(entry.id);
+    } else  {
+      alert(error);
     }
   }
 
@@ -153,7 +159,7 @@ export default function Page() {
         }} onSelect={handleSelect} onTagAdd={onTagAdd} onTagDelete={onTagDelete}/>
       </div>
       <div>
-        <textarea className="w-full h-full p-4 bg-white" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
+        <textarea className="w-full h-full p-4 bg-white" disabled={!currentNote} value={currentNote?.content || ""} onChange={(e) => {
           const value = e.target.value;
           setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: value} : n))
         }}/>
