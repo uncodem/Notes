@@ -58,7 +58,7 @@ const listNoteTags = db.prepare(`
 `);
 
 const getNotes = db.prepare(`
-    SELECT n.id, n.title, COALESCE(GROUP_CONCAT(t.name, '')) as tags
+    SELECT n.id, n.title, COALESCE(GROUP_CONCAT(t.name), '') as tags
     FROM notes n
     LEFT JOIN note_tags nt ON n.id = nt.note_id
     LEFT JOIN tags t ON nt.tag_id = t.id
