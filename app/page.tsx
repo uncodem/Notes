@@ -46,26 +46,28 @@ export default function Page() {
 
   function onNoteAdd() {
     const name = prompt("Name of the note : ");
-    setNotes([...notes, {
+    setNotes(prev => [...prev, {
       id: id_count,
       title: name ? name : `Note : ${id_count-1}`,
       content: "",
       tags: [],
       expanded: false,
     }]);
+    setSelectedNote(id_count);
     setIdCount(id_count+1);
   }
 
   function onTagAdd(id: number) {
-    const tag = prompt("Tag name?");
+    let tag = prompt("Tag name?");
     if (!tag) return;
-    setNotes(notes.map(e => {
-      return e.id === id ? {...e, tags: [...e.tags, tag] } : e;
+    tag = tag.toLowerCase();
+    setNotes(prev => prev.map(e => {
+      return e.id === id ? {...e, tags: e.tags.includes(tag) ? e.tags : [...e.tags, tag] } : e;
     }));
   }
 
   function onTagDelete(id: number, tag: string) {
-    setNotes(notes.map(e => {
+    setNotes(prev => prev.map(e => {
       return e.id === id ? {...e, tags: e.tags.filter(t => t !== tag)} : e;
     }));
   }

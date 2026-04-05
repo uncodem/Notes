@@ -18,8 +18,8 @@ export default function NotesList({notes, onToggleExpand, onSelect, onNoteAdd, o
                 return <NoteEntry key={note.id} note={note} 
                             onToggleExpand={() => onToggleExpand(note.id)} 
                             onSelect={() => onSelect(note.id)}
-                            onTagAdd={onTagAdd}
-                            onTagDelete={onTagDelete}></NoteEntry>
+                            onTagAdd={() => onTagAdd(note.id)}
+                            onTagDelete={(tag) => onTagDelete(note.id, tag)}></NoteEntry>
             })}
             <button onClick={onNoteAdd} className="p-2 border-single border-2 border-white rounded-lg m-2 bg-gray-200">+ Create Note</button>
         </div>
