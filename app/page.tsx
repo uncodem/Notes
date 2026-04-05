@@ -25,7 +25,7 @@ export default function Page() {
       expanded: false
     }
   ]);
-  let id_count = 3;
+  const [id_count, setIdCount] = useState(3);
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
 
@@ -47,12 +47,13 @@ export default function Page() {
   function onNoteAdd() {
     const name = prompt("Name of the note : ");
     setNotes([...notes, {
-      id: id_count++,
+      id: id_count,
       title: name ? name : `Note : ${id_count-1}`,
       content: "",
       tags: [],
       expanded: false,
     }]);
+    setIdCount(id_count+1);
   }
 
   return (
