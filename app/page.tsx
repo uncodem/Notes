@@ -56,6 +56,20 @@ export default function Page() {
     setIdCount(id_count+1);
   }
 
+  function onTagAdd(id: number) {
+    const tag = prompt("Tag name?");
+    if (!tag) return;
+    setNotes(notes.map(e => {
+      return e.id === id ? {...e, tags: [...e.tags, tag] } : e;
+    }));
+  }
+
+  function onTagDelete(id: number, tag: string) {
+    setNotes(notes.map(e => {
+      return e.id === id ? {...e, tags: e.tags.filter(t => t !== tag)} : e;
+    }));
+  }
+
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
       <div className="border-r">
@@ -63,7 +77,7 @@ export default function Page() {
           setNotes(prev => 
             prev.map(n => n.id === id ? {...n, expanded: !n.expanded} : n)
           );
-        }} onSelect={(id: number) => setSelectedNote(id)}/>
+        }} onSelect={(id: number) => setSelectedNote(id)} onTagAdd={onTagAdd} onTagDelete={onTagDelete}/>
       </div>
       <div>
         <textarea className="w-full h-full p-4 bg-white" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
