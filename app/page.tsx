@@ -3,7 +3,7 @@ import {useEffect, useState, useRef} from "react";
 import NotesList from "./_components/NotesList";
 import {Entry, EntryUI} from "./_lib/Entry";
 
-async function save({id, content, time}: {id: number, content: string|undefined, time: number}) {
+async function save({id, content, time}: {id: number, content: string, time: number}) {
   const res = await fetch(`/api/notes/${id}`, {
     method: "PATCH", 
     headers: {"Content-Type": "application/json"},
@@ -54,7 +54,7 @@ export default function Page() {
   useEffect(() => {
     if (!noteId) return;
     if (timeoutRef.current) clearTimeoutRef();
-    timeoutRef.current = setTimeout(() => save({id: noteId, content, time: Date.now()}), 2000);
+    timeoutRef.current = setTimeout(() => save({id: noteId, content: content ?? "", time: Date.now()}), 2000);
     return () => {
       if (timeoutRef.current) clearTimeoutRef();
     };
@@ -87,6 +87,11 @@ export default function Page() {
       body: JSON.stringify({tag})
     });
 
+  if (!res.ok) {
+      alert("Request failed");
+      return;
+    }
+
     const {ok, error} = await res.json();
 
     if (ok) {
@@ -94,7 +99,7 @@ export default function Page() {
         return e.id === id ? {...e, tags: e.tags.includes(tag) ? e.tags : [...e.tags, tag] } : e;
       }));
     } else {
-      prompt(error);
+      alert(error);
     }
   }
 
@@ -102,14 +107,19 @@ export default function Page() {
     const normalized = tag.toLowerCase().trim();
 
     const res = await fetch(`/api/notes/${id}/tags/${normalized}`, {method: "DELETE"});
+    if (!res.ok) {
+      alert("Request failed");
+      return;
+    }
+
     const {ok, error} = await res.json();
 
     if (ok) {
       setNotes(prev => prev.map(e => {
-        return e.id === id ? {...e, tags: e.tags.filter(t => t !== tag)} : e;
+        return e.id === id ? {...e, tags: e.tags.filter(t => t !== normalized)} : e;
       }));
     } else {
-      prompt(error);
+      alert(error);
     }
   } 
 
