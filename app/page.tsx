@@ -3,8 +3,14 @@ import {useEffect, useState, useRef} from "react";
 import NotesList from "./_components/NotesList";
 import {Entry, EntryUI} from "./_lib/Entry";
 
-function save(v: object) {
-  console.log("Autosave : ", {v})
+async function save({id, content, time}: {id: number, content: string, time: number}) {
+  const res = await fetch(`/api/notes/${id}`, {
+    method: "PATCH", 
+    body: JSON.stringify({content, time})
+  });
+
+  const {ok, error} = await res.json();
+  if (!ok) alert(error);
 }
 
 export default function Page() {
@@ -78,17 +84,24 @@ export default function Page() {
     }));
   } 
 
-  function handleSelect(id: number) {
+  async function handleSelect(id: number) {
     const prev = prevNoteRef.current;
     if (timeoutRef.current) clearTimeoutRef();
-    if (prev.id !== null) {
+    if (prev.id !== null && prev.content !== undefined) {
       save({
         id: prev.id,
         content: prev.content,
         time: Date.now(),
       });
     }
-    setSelectedNote(id);
+
+    const res = await fetch(`/api/notes/${id}`);
+    const {ok, ...entry} = await res.json();
+
+    if (ok) {
+      setNotes(prev => prev.map(e => e.id === id ? entry : e));
+      setSelectedNote(id);
+    }
   }
 
   return (

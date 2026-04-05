@@ -1,25 +1,6 @@
 import {type NextRequest} from "next/server";
-import {Entry} from "../../_lib/Entry";
-
-const notes: Entry[] = [{
-        id: 1,
-        title: "First note",
-        content: "Hello, World!",
-        tags: ["work"],
-    },
-    {
-        id: 2,
-        title: "Second note",
-        content: "Yet another notes app",
-        tags: ["personal", "yet again"],
-    },
-    {
-        id: 3,
-        title: "Third note",
-        content: "Yet yet another note",
-        tags: ["work", "personal"]
-    }
-];
+import {Entry} from "@/app/_lib/Entry";
+import {notes} from "@/app/_lib/dummy";
 
 let id_counter = 4;
 
