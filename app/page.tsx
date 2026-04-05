@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import NotesList from "./_components/NotesList";
 import {Entry} from "./_lib/Entry";
 
@@ -33,16 +33,20 @@ export default function Page() {
   const noteId = currentNote?.id;
   const content = currentNote?.content;
 
+  const prevNoteRef = useRef<{id: number | null, content: string | undefined }>({
+      id: null,
+      content: undefined
+  });
+
   useEffect(() => {
     if (!noteId) return;
-    const id = noteId;
-    const timeout = setTimeout(() => save({id, content}), 2000);
-    return () => {
-      if (id !== selectedNote) save({id, content});
-      clearTimeout(timeout);
-    }
-  }, [noteId, content, selectedNote]);
+    const timeout = setTimeout(() => save({id: noteId, content, time: Date.now()}), 2000);
+    return () => clearTimeout(timeout);
+  }, [noteId, content]);
 
+  useEffect(() => {
+    prevNoteRef.current = {id: noteId ?? null, content};
+  }, [noteId, content]);
 
   function onNoteAdd() {
     const name = prompt("Name of the note : ");
@@ -72,6 +76,18 @@ export default function Page() {
     }));
   }
 
+  function handleSelect(id: number) {
+    const prev = prevNoteRef.current;
+    if (prev.id !== null) {
+      save({
+        id: prev.id,
+        content: prev.content,
+        time: Date.now(),
+      });
+    }
+    setSelectedNote(id);
+  }
+
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
       <div className="border-r">
@@ -79,7 +95,7 @@ export default function Page() {
           setNotes(prev => 
             prev.map(n => n.id === id ? {...n, expanded: !n.expanded} : n)
           );
-        }} onSelect={(id: number) => setSelectedNote(id)} onTagAdd={onTagAdd} onTagDelete={onTagDelete}/>
+        }} onSelect={handleSelect} onTagAdd={onTagAdd} onTagDelete={onTagDelete}/>
       </div>
       <div>
         <textarea className="w-full h-full p-4 bg-white" disabled={currentNote === null} value={currentNote?.content || ""} onChange={(e) => {
