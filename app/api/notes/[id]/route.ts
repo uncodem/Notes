@@ -30,5 +30,16 @@ export async function PATCH(req: NextRequest, {params}:{params: Promise<{id: str
     }
 
     entry.content = content;
+    return Response.json({ok: true, id: entry.id, content: entry.content});
+}
+
+export async function DELETE(req: NextRequest, {params}:{params: Promise<{id: string}>}) {
+    const {id: id_str} = await params;
+    const id = Number(id_str);
+    const entry = notes.findIndex(e => e.id === id);
+    if (entry == -1) return Response.json({ok: false, error: "Not found"}, {status: 404});
+
+    notes.splice(entry, 11);
+
     return Response.json({ok: true});
 }
