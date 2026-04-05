@@ -40,12 +40,18 @@ export default function Page() {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  function clearTimeoutRef() {
+    if (!timeoutRef.current) return;
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = null;
+  }
+
   useEffect(() => {
     if (!noteId) return;
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (timeoutRef.current) clearTimeoutRef();
     timeoutRef.current = setTimeout(() => save({id: noteId, content, time: Date.now()}), 2000);
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) clearTimeoutRef();
     };
   }, [noteId, content]);
 
@@ -79,11 +85,11 @@ export default function Page() {
     setNotes(prev => prev.map(e => {
       return e.id === id ? {...e, tags: e.tags.filter(t => t !== tag)} : e;
     }));
-  }
+  } 
 
   function handleSelect(id: number) {
     const prev = prevNoteRef.current;
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (timeoutRef.current) clearTimeoutRef();
     if (prev.id !== null) {
       save({
         id: prev.id,
