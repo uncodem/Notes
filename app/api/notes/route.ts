@@ -6,21 +6,25 @@ const notes: Entry[] = [{
         title: "First note",
         content: "Hello, World!",
         tags: ["work"],
-        expanded: false
     },
     {
         id: 2,
         title: "Second note",
         content: "Yet another notes app",
         tags: ["personal", "yet again"],
-        expanded: false
+    },
+    {
+        id: 3,
+        title: "Third note",
+        content: "Yet yet another note",
+        tags: ["work", "personal"]
     }
 ];
 
-let id_counter = 3;
+let id_counter = 4;
 
 export async function GET(req: NextRequest) {
-    return Response.json(notes);
+    return Response.json(notes.map(({id, tags, title}: Entry) => ({id, tags, title})));
 }
 
 export async function POST(req: NextRequest) {
@@ -31,7 +35,6 @@ export async function POST(req: NextRequest) {
         title,
         content: "",
         tags: [],
-        expanded: false
     };
     notes.push(new_entry);
     return Response.json({ok: true, entry: new_entry});

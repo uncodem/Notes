@@ -3,5 +3,8 @@ export type Entry = {
     title: string,
     content: string,
     tags: string[],
-    expanded: boolean
 };
+
+export type EntryUI = Entry & {
+    expanded: boolean
+}

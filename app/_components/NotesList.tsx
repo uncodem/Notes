@@ -1,8 +1,8 @@
-import {Entry} from "../_lib/Entry";
+import {EntryUI} from "../_lib/Entry";
 import NoteEntry from "./NoteEntry";
 
 type NotesListParams = {
-    notes: Entry[],
+    notes: EntryUI[],
     onToggleExpand: (_: number) => void,
     onSelect: (_: number) => void,
     onNoteAdd: () => void,

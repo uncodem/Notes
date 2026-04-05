@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useState, useRef} from "react";
 import NotesList from "./_components/NotesList";
-import {Entry} from "./_lib/Entry";
+import {Entry, EntryUI} from "./_lib/Entry";
 
 function save(v: object) {
   console.log("Autosave : ", {v})
@@ -9,7 +9,7 @@ function save(v: object) {
 
 export default function Page() {
 
-  const [notes, setNotes] = useState<Entry[]>([]);
+  const [notes, setNotes] = useState<EntryUI[]>([]);
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
 
@@ -34,7 +34,7 @@ export default function Page() {
     async function fn() {
       const res = await fetch("/api/notes");
       const entries = await res.json();
-      setNotes(entries);
+      setNotes(entries.map((e: Entry) => ({...e, expanded: false})));
     }
     fn();
   }, []);

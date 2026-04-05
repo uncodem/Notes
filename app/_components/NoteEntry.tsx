@@ -1,7 +1,7 @@
-import {Entry} from "../_lib/Entry";
+import {EntryUI} from "../_lib/Entry";
 
 type NotesEntryParams = {
-    note: Entry,
+    note: EntryUI,
     onToggleExpand: () => void,
     onSelect: () => void,
     onTagAdd: () => void,
