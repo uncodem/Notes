@@ -3,11 +3,17 @@ import {useEffect, useState, useRef} from "react";
 import NotesList from "./_components/NotesList";
 import {Entry, EntryUI} from "./_lib/Entry";
 
-async function save({id, content, time}: {id: number, content: string, time: number}) {
+async function save({id, content, time}: {id: number, content: string|undefined, time: number}) {
   const res = await fetch(`/api/notes/${id}`, {
     method: "PATCH", 
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify({content, time})
   });
+
+  if (!res.ok) {
+    alert("Request failed");
+    return;
+  }
 
   const {ok, error} = await res.json();
   if (!ok) alert(error);
@@ -65,7 +71,8 @@ export default function Page() {
     const res = await fetch("/api/notes", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({title})});
     const {ok, entry} = await res.json();
     if (ok) {
-      setNotes(prev => [...prev, entry]);
+      setNotes(prev => [...prev, {...entry, expanded: false}]);
+      await handleSelect(entry.id);
     }
   }
 
@@ -99,7 +106,7 @@ export default function Page() {
     const {ok, ...entry} = await res.json();
 
     if (ok) {
-      setNotes(prev => prev.map(e => e.id === id ? entry : e));
+      setNotes(prev => prev.map(e => e.id === id ? {expanded: e.expanded, ...entry} : e));
       setSelectedNote(id);
     }
   }
