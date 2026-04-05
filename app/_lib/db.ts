@@ -26,7 +26,7 @@ db.run(`
 `);
 
 const insertNote = db.prepare("INSERT INTO notes (title, content, updated_at) VALUES (?, '', ?)");
-const updateNote = db.prepare(`
+const updateNoteEntry = db.prepare(`
     UPDATE notes SET content = ?, updated_at = ?
     WHERE id = ? AND (updated_at IS NULL or updated_at < ?)
 `);
@@ -79,4 +79,24 @@ export function getFullNote(id: number) {
     if (!note) return null;
     const tags = listNoteTags.all(id).map(t => t.name);
     return {...note, tags};
+}
+
+export function tagNote(id: number, rawTag: string) {
+    tagNoteTxn(id, rawTag);
+}
+
+export function untagNote(id: number, rawTag: string) {
+    untagNoteTxn(id, rawTag);
+}
+
+export function getAllNotes() {
+    return getNotes.all();
+}
+
+export function addNewNote(title: string, updated_at: number) {
+    insertNote.run(title, updated_at);
+}
+
+export function updateNote(id: number, content: string, updated_at: number) {
+    updateNoteEntry.run(content, updated_at, id, updated_at);
 }
