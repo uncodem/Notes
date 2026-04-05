@@ -76,19 +76,41 @@ export default function Page() {
     }
   }
 
-  function onTagAdd(id: number) {
+  async function onTagAdd(id: number) {
     let tag = prompt("Tag name?");
-    if (!tag) return;
+    if (!tag || tag.trim() == "") return;
     tag = tag.toLowerCase();
-    setNotes(prev => prev.map(e => {
-      return e.id === id ? {...e, tags: e.tags.includes(tag) ? e.tags : [...e.tags, tag] } : e;
-    }));
+
+    const res = await fetch(`/api/notes/${id}/tags`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({tag})
+    });
+
+    const {ok, error} = await res.json();
+
+    if (ok) {
+      setNotes(prev => prev.map(e => {
+        return e.id === id ? {...e, tags: e.tags.includes(tag) ? e.tags : [...e.tags, tag] } : e;
+      }));
+    } else {
+      prompt(error);
+    }
   }
 
-  function onTagDelete(id: number, tag: string) {
-    setNotes(prev => prev.map(e => {
-      return e.id === id ? {...e, tags: e.tags.filter(t => t !== tag)} : e;
-    }));
+  async function onTagDelete(id: number, tag: string) {
+    const normalized = tag.toLowerCase().trim();
+
+    const res = await fetch(`/api/notes/${id}/tags/${normalized}`, {method: "DELETE"});
+    const {ok, error} = await res.json();
+
+    if (ok) {
+      setNotes(prev => prev.map(e => {
+        return e.id === id ? {...e, tags: e.tags.filter(t => t !== tag)} : e;
+      }));
+    } else {
+      prompt(error);
+    }
   } 
 
   async function handleSelect(id: number) {
