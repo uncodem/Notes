@@ -65,6 +65,11 @@ const getNotes = db.prepare(`
     GROUP BY n.id
 `);
 
+const deleteNoteEntry = db.prepare("DELETE FROM notes WHERE id = ?");
+export function deleteNote(id: number) {
+    deleteNoteEntry.run(id);
+}
+
 const getNoteById = db.prepare(`SELECT id, title, content FROM notes WHERE id = ?`);
 
 const tagNoteTxn = db.transaction((id: number, rawTag: string) => {
@@ -82,8 +87,8 @@ const untagNoteTxn = db.transaction((id: number, rawTag: string) => {
     unlinkTag.run(id, row.id);
 });
 
-export function getFullNote(id: number) {
-    const note = getNoteById.get(id);
+export function getFullNote(id: number): Entry|null {
+    const note: {content: string, id: number, title: string}|null = getNoteById.get(id);
     if (!note) return null;
     const tags = listNoteTags.all(id).map(t => t.name);
     return {...note, tags};

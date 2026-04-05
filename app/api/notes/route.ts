@@ -1,5 +1,5 @@
 import {type NextRequest} from "next/server";
-import {db, getAllNotes, addNewNote} from "@/app/_lib/db";
+import {getAllNotes, addNewNote} from "@/app/_lib/db";
 
 export async function GET(req: NextRequest) {
     try {
