@@ -93,7 +93,7 @@ export default function Page() {
       body: JSON.stringify({tag})
     });
 
-  if (!res.ok) {
+    if (!res.ok) {
       alert("Request failed");
       return;
     }

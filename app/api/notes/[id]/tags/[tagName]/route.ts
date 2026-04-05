@@ -1,20 +1,18 @@
 import {NextRequest} from "next/server";
-import {notes} from "@/app/_lib/dummy";
+import {untagNote, getFullNote} from "@/app/_lib/db";
 
 export async function DELETE(req: NextRequest, {params}: {params: Promise<{id: string, tagName: string}>}) {
-    const {id, tagName} = await params;
-    const noteId = Number(id);
+    try {
+        const {id, tagName} = await params;
+        const noteId = Number(id);
 
-    const idx = notes.findIndex(e => e.id === noteId);
-    if (idx === -1) return Response.json({ok: false, error: "Note not found"}, {status: 404});
+        const entry = getFullNote(noteId);
+        if (!entry) return Response.json({ok: false, error: "Not Found"}, {status: 404});
+        untagNote(noteId, tagName.trim());
 
-    const normalized = tagName.toLowerCase().trim();
-
-    const entry = notes[idx];
-    const tagIdx = entry.tags.findIndex(t => t === normalized);
-    if (tagIdx === -1) return Response.json({ok: false, error: "Tag not found"}, {status: 404});
-
-    entry.tags.splice(tagIdx,1);
-
-    return Response.json({ok: true});
+        return Response.json({ok: true});
+    } catch (err) {
+        console.error("DELETE Error : ", err);
+        return Response.json({ok: false, error: "Internal Server Error"}, {status: 500});
+    }
 }

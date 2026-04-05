@@ -1,22 +1,23 @@
 import {NextRequest} from "next/server";
-import {notes} from "@/app/_lib/dummy";
+import {tagNote, getFullNote} from "@/app/_lib/db";
 
 export async function POST(req: NextRequest, {params}: {params: Promise<{id: string}>}) {
-    const {id} = await params;
-    const noteId = Number(id);
+    try {
+        const {id} = await params;
+        const noteId = Number(id);
 
-    const idx = notes.findIndex(e => e.id === noteId);
-    if (idx == -1) return Response.json({ok: false, error: "Not found"}, {status: 404});
+        const {tag} = await req.json();
 
-    const {tag} = await req.json();
+        if (typeof tag !== "string" || tag.trim() == "") return Response.json({ok: false, error: "Invalid tag"}, {status: 400});
 
-    if (typeof tag !== "string" || tag.trim() == "") return Response.json({ok: false, error: "Invalid tag"}, {status: 400});
+        const note = getFullNote(noteId);
+        if (!note) return Response.json({ok: false, error: "Not Found"}, {status: 404});
 
-    const normalized = tag.toLowerCase().trim();
+        tagNote(noteId, tag.trim());
 
-    if (!notes[idx].tags.includes(normalized)) {
-        notes[idx].tags.push(normalized);
+        return Response.json({ok: true});
+    } catch (err) {
+        console.error("POST Error : ", err);
+        return Response.json({ok: false, error: "Internal Server Error"}, {status: 500});
     }
-
-    return Response.json({ok: true});
 }
