@@ -5,6 +5,7 @@ import {Database} from "bun:sqlite";
 export const db = new Database("yanotes.db");
 
 db.run("PRAGMA foreign_keys = ON;");
+db.run("PRAGMA journal_mode = WAL;");
 db.run(`
     CREATE TABLE IF NOT EXISTS notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,7 +57,14 @@ const listNoteTags = db.prepare(`
     WHERE nt.note_id = ?
 `);
 
-const getNotes = db.prepare(`SELECT id, title FROM notes`);
+const getNotes = db.prepare(`
+    SELECT n.id, n.title, COALESCE(GROUP_CONCAT(t.name, '')) as tags
+    FROM notes n
+    LEFT JOIN note_tags nt ON n.id = nt.note_id
+    LEFT JOIN tags t ON nt.tag_id = t.id
+    GROUP BY n.id
+`);
+
 const getNoteById = db.prepare(`SELECT id, title, content FROM notes WHERE id = ?`);
 
 const tagNoteTxn = db.transaction((id: number, rawTag: string) => {
@@ -90,11 +98,21 @@ export function untagNote(id: number, rawTag: string) {
 }
 
 export function getAllNotes() {
-    return getNotes.all();
+    const notes = getNotes.all() as {id: number, title: string, tags: string}[];
+    return notes.map(note => ({
+        ...note,
+        tags: note.tags ? note.tags.split(',') : []
+    }));
 }
 
 export function addNewNote(title: string, updated_at: number) {
-    insertNote.run(title, updated_at);
+    const res = insertNote.run(title, updated_at);
+    return {
+        id: res.lastInsertRowId,
+        title: title,
+        content: "",
+        tags: []
+    };
 }
 
 export function updateNote(id: number, content: string, updated_at: number) {
