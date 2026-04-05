@@ -25,6 +25,7 @@ export default function Page() {
       expanded: false
     }
   ]);
+  let id_count = 3;
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
 
@@ -43,10 +44,21 @@ export default function Page() {
   }, [noteId, content, selectedNote]);
 
 
+  function onNoteAdd() {
+    const name = prompt("Name of the note : ");
+    setNotes([...notes, {
+      id: id_count++,
+      title: name ? name : `Note : ${id_count-1}`,
+      content: "",
+      tags: [],
+      expanded: false,
+    }]);
+  }
+
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
       <div className="border-r">
-        <NotesList notes={notes} onToggleExpand={(id: number) => {
+        <NotesList notes={notes} onNoteAdd={onNoteAdd} onToggleExpand={(id: number) => {
           setNotes(prev => 
             prev.map(n => n.id === id ? {...n, expanded: !n.expanded} : n)
           );
