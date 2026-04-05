@@ -9,23 +9,7 @@ function save(v: object) {
 
 export default function Page() {
 
-  const [notes, setNotes] = useState<Entry[]>([
-    {
-      id: 1,
-      title: "First note",
-      content: "Hello, World!",
-      tags: ["work"],
-      expanded: false
-    },
-    {
-      id: 2,
-      title: "Second note",
-      content: "Yet another notes app",
-      tags: ["personal", "yet again"],
-      expanded: false
-    }
-  ]);
-  const [id_count, setIdCount] = useState(3);
+  const [notes, setNotes] = useState<Entry[]>([]);
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
 
@@ -47,6 +31,15 @@ export default function Page() {
   }
 
   useEffect(() => {
+    async function fn() {
+      const res = await fetch("/api/notes");
+      const entries = await res.json();
+      setNotes(entries);
+    }
+    fn();
+  }, []);
+
+  useEffect(() => {
     if (!noteId) return;
     if (timeoutRef.current) clearTimeoutRef();
     timeoutRef.current = setTimeout(() => save({id: noteId, content, time: Date.now()}), 2000);
@@ -59,17 +52,15 @@ export default function Page() {
     prevNoteRef.current = {id: noteId ?? null, content};
   }, [noteId, content]);
 
-  function onNoteAdd() {
+  async function onNoteAdd() {
     const name = prompt("Name of the note : ");
-    setNotes(prev => [...prev, {
-      id: id_count,
-      title: name ? name : `Note : ${id_count-1}`,
-      content: "",
-      tags: [],
-      expanded: false,
-    }]);
-    setSelectedNote(id_count);
-    setIdCount(id_count+1);
+    const title = name ? name : `Untitled-Note`;
+
+    const res = await fetch("/api/notes", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({title})});
+    const {ok, entry} = await res.json();
+    if (ok) {
+      setNotes(prev => [...prev, entry]);
+    }
   }
 
   function onTagAdd(id: number) {
