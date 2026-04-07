@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import NotesList from "./_components/NotesList";
 import { Entry, EntryUI } from "./_lib/Entry";
+import * as api from "@/app/_lib/api";
 
 async function save({
     id,
@@ -12,18 +13,7 @@ async function save({
     content: string;
     time: number;
 }) {
-    const res = await fetch(`/api/notes/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, time }),
-    });
-
-    if (!res.ok) {
-        alert("Request failed");
-        return;
-    }
-
-    const { ok, error } = await res.json();
+    const { ok, error } = await api.saveNote(id, content, time);
     if (!ok) alert(error);
 }
 
@@ -59,16 +49,7 @@ export default function Page() {
     }
 
     useEffect(() => {
-        async function fn() {
-            const res = await fetch("/api/notes");
-            const { ok, notes, error } = await res.json();
-            if (!ok) {
-                alert(error);
-                return;
-            }
-            setNotes(notes.map((e: Entry) => ({ ...e, expanded: false })));
-        }
-        fn();
+        api.fetchNotes();
     }, []);
 
     useEffect(() => {
@@ -106,13 +87,7 @@ export default function Page() {
         const name = prompt("Name of the note : ");
         if (name == null) return;
         const title = name ? name : `Untitled-Note`;
-
-        const res = await fetch("/api/notes", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title }),
-        });
-        const { ok, entry, error } = await res.json();
+        const { ok, entry, error } = await api.createNote(title);
         if (ok) {
             setNotes((prev) => [...prev, { ...entry, expanded: false }]);
             await handleSelect(entry.id);
@@ -126,18 +101,7 @@ export default function Page() {
         if (!tag || tag.trim() == "") return;
         tag = tag.toLowerCase();
 
-        const res = await fetch(`/api/notes/${id}/tags`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tag }),
-        });
-
-        if (!res.ok) {
-            alert("Request failed");
-            return;
-        }
-
-        const { ok, error } = await res.json();
+        const { ok, error } = await api.addTag(id, tag);
 
         if (ok) {
             setNotes((prev) =>
@@ -160,15 +124,7 @@ export default function Page() {
     async function onTagDelete(id: number, tag: string) {
         const normalized = tag.toLowerCase().trim();
 
-        const res = await fetch(`/api/notes/${id}/tags/${normalized}`, {
-            method: "DELETE",
-        });
-        if (!res.ok) {
-            alert("Request failed");
-            return;
-        }
-
-        const { ok, error } = await res.json();
+        const { ok, error } = await api.removeTag(id, normalized);
 
         if (ok) {
             setNotes((prev) =>
@@ -184,12 +140,7 @@ export default function Page() {
     }
 
     async function onDelete(id: number) {
-        const res = await fetch(`/api/notes/${id}`, { method: "DELETE" });
-        if (!res.ok) {
-            alert("Request failed");
-            return;
-        }
-        const { ok, error } = await res.json();
+        const { ok, error } = await api.deleteNote(id);
         if (!ok) {
             alert(error);
             return;
@@ -208,8 +159,7 @@ export default function Page() {
             });
         }
 
-        const res = await fetch(`/api/notes/${id}`);
-        const { ok, ...entry } = await res.json();
+        const { ok, ...entry } = await api.fetchNoteById(id);
 
         if (ok) {
             setNotes((prev) =>
