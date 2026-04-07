@@ -70,6 +70,7 @@ export default function Page() {
 
   async function onNoteAdd() {
     const name = prompt("Name of the note : ");
+    if (name == null) return;
     const title = name ? name : `Untitled-Note`;
 
     const res = await fetch("/api/notes", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({title})});
@@ -129,6 +130,20 @@ export default function Page() {
     }
   } 
 
+  async function onDelete(id: number) {
+    const res = await fetch(`/api/notes/${id}`, {method: "DELETE"});
+    if (!res.ok) {
+      alert("Request failed");
+      return;
+    }
+    const {ok, error} = await res.json();
+    if (!ok) {
+      alert(error);
+      return;
+    }
+    setNotes(prev => prev.filter(e => e.id !== id));
+  }
+
   async function handleSelect(id: number) {
     const prev = prevNoteRef.current;
     if (timeoutRef.current) clearTimeoutRef();
@@ -152,7 +167,7 @@ export default function Page() {
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
       <div className="border-r">
-        <NotesList notes={notes} onNoteAdd={onNoteAdd} onToggleExpand={(id: number) => {
+        <NotesList notes={notes} onDelete={onDelete} onNoteAdd={onNoteAdd} onToggleExpand={(id: number) => {
           setNotes(prev => 
             prev.map(n => n.id === id ? {...n, expanded: !n.expanded} : n)
           );

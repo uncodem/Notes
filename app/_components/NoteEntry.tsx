@@ -2,16 +2,18 @@ import {EntryUI} from "../_lib/Entry";
 
 type NotesEntryParams = {
     note: EntryUI,
+    onDelete: () => void,
     onToggleExpand: () => void,
     onSelect: () => void,
     onTagAdd: () => void,
     onTagDelete: (_: string) => void,
 };
 
-export default function NoteEntry({note, onToggleExpand, onSelect, onTagAdd, onTagDelete}: NotesEntryParams) {
+export default function NoteEntry({note, onDelete, onToggleExpand, onSelect, onTagAdd, onTagDelete}: NotesEntryParams) {
     return (
         <div className="p-2 border-single border-2 border-white rounded-lg m-2 bg-gray-200">
             <div className="flex justify-between">
+                <button onClick={onDelete}>X</button>
                 <button onClick={onSelect}>{note.title}</button>
                 <br/>
             {note.expanded && (
