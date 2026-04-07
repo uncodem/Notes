@@ -1,6 +1,7 @@
-import {Entry} from "./Entry";
+import { Entry } from "./Entry";
 
-export const notes: Entry[] = [{
+export const notes: Entry[] = [
+    {
         id: 1,
         title: "First note",
         content: "Hello, World!",
@@ -16,6 +17,6 @@ export const notes: Entry[] = [{
         id: 3,
         title: "Third note",
         content: "Yet yet another note",
-        tags: ["work", "personal"]
-    }
+        tags: ["work", "personal"],
+    },
 ];

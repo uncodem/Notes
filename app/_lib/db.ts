@@ -1,6 +1,6 @@
-import {Entry} from "./Entry";
+import { Entry } from "./Entry";
 
-import {Database} from "bun:sqlite";
+import { Database } from "bun:sqlite";
 
 export const db = new Database("yanotes.db");
 
@@ -26,7 +26,9 @@ db.run(`
     );
 `);
 
-const insertNote = db.prepare("INSERT INTO notes (title, content, updated_at) VALUES (?, '', ?)");
+const insertNote = db.prepare(
+    "INSERT INTO notes (title, content, updated_at) VALUES (?, '', ?)",
+);
 const updateNoteEntry = db.prepare(`
     UPDATE notes SET content = ?, updated_at = ?
     WHERE id = ? AND (updated_at IS NULL or updated_at < ?)
@@ -70,28 +72,30 @@ export function deleteNote(id: number) {
     deleteNoteEntry.run(id);
 }
 
-const getNoteById = db.prepare(`SELECT id, title, content FROM notes WHERE id = ?`);
+const getNoteById = db.prepare(
+    `SELECT id, title, content FROM notes WHERE id = ?`,
+);
 
 const tagNoteTxn = db.transaction((id: number, rawTag: string) => {
     const tag = rawTag.toLowerCase();
     insertTag.run(tag);
     const tagRow = getTagId.get(tag);
     if (!tagRow) throw new Error("Tag lookup failed");
-    linkTag.run(id, (tagRow as {id: number}).id);
+    linkTag.run(id, (tagRow as { id: number }).id);
 });
 
 const untagNoteTxn = db.transaction((id: number, rawTag: string) => {
     const tag = rawTag.toLowerCase();
-    const row = getTagId.get(tag) as {id: number} | undefined;
+    const row = getTagId.get(tag) as { id: number } | undefined;
     if (!row) return;
     unlinkTag.run(id, row.id);
 });
 
-export function getFullNote(id: number): Entry|null {
+export function getFullNote(id: number): Entry | null {
     const note = getNoteById.get(id);
     if (!note) return null;
-    const tags = listNoteTags.all(id).map((t => (t as {name: string}).name));
-    return {...(note as Entry), tags};
+    const tags = listNoteTags.all(id).map((t) => (t as { name: string }).name);
+    return { ...(note as Entry), tags };
 }
 
 export function tagNote(id: number, rawTag: string) {
@@ -103,10 +107,14 @@ export function untagNote(id: number, rawTag: string) {
 }
 
 export function getAllNotes() {
-    const notes = getNotes.all() as {id: number, title: string, tags: string}[];
-    return notes.map(note => ({
+    const notes = getNotes.all() as {
+        id: number;
+        title: string;
+        tags: string;
+    }[];
+    return notes.map((note) => ({
         ...note,
-        tags: note.tags ? note.tags.split(',') : []
+        tags: note.tags ? note.tags.split(",") : [],
     }));
 }
 
@@ -116,7 +124,7 @@ export function addNewNote(title: string, updated_at: number) {
         id: res.lastInsertRowid,
         title: title,
         content: "",
-        tags: []
+        tags: [],
     };
 }
 

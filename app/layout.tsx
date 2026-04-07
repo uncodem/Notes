@@ -2,20 +2,18 @@ import type { Metadata } from "next";
 import "./global.css";
 
 export const metadata: Metadata = {
-  title: "Notes app lmao",
-  description: "A simple notes app",
+    title: "Notes app lmao",
+    description: "A simple notes app",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-    >
-      <body suppressHydrationWarning>{children}</body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body suppressHydrationWarning>{children}</body>
+        </html>
+    );
 }
