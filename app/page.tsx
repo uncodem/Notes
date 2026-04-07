@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import NotesList from "./_components/NotesList";
+import Editor from "./_components/Editor";
 import { Entry, EntryUI } from "./_lib/Entry";
 import * as api from "@/app/_lib/api";
 
@@ -202,21 +203,9 @@ export default function Page() {
                 />
             </div>
             <div>
-                <textarea
-                    className="w-full h-full p-4 bg-white"
-                    disabled={!currentNote}
-                    value={currentNote?.content || ""}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setNotes((prev) =>
-                            prev.map((n) =>
-                                n.id === selectedNote
-                                    ? { ...n, content: value }
-                                    : n,
-                            ),
-                        );
-                    }}
-                />
+                <Editor currentNote={currentNote} onContentChange={(newContent: string) => {
+                    setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: newContent} : n));
+                }}/>
             </div>
         </div>
     );
