@@ -49,7 +49,15 @@ export default function Page() {
     }
 
     useEffect(() => {
-        api.fetchNotes();
+        async function fn() {
+            const {ok, notes, error} = await api.fetchNotes();
+            if (!ok) {
+                alert(error);
+                return;
+            }
+            setNotes(notes.map(e => ({...e, expanded: false})));
+        }
+        fn();
     }, []);
 
     useEffect(() => {
