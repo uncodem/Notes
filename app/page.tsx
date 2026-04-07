@@ -22,6 +22,12 @@ async function save({id, content, time}: {id: number, content: string, time: num
 export default function Page() {
 
   const [notes, setNotes] = useState<EntryUI[]>([]);
+  const [filters, setFilters] = useState<string[]>([]);
+
+  const displayedNotes = notes.filter(note => {
+    if (filters.length === 0) return true;
+    return filters.every(ftag => note.tags.includes(ftag));
+  });
 
   const [selectedNote, setSelectedNote] = useState<number | null>(null);
 
@@ -67,6 +73,17 @@ export default function Page() {
   useEffect(() => {
     prevNoteRef.current = {id: noteId ?? null, content};
   }, [noteId, content]);
+
+  function onFilterClick() {
+    const input = prompt("Enter tags to filter by (comma separated): ");
+    if (input === null) return;
+    if (input.trim() === "") {
+      setFilters([]);
+      return;
+    }
+    const tags = input.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
+    setFilters(tags);
+  }
 
   async function onNoteAdd() {
     const name = prompt("Name of the note : ");
@@ -167,7 +184,7 @@ export default function Page() {
   return (
     <div className="grid grid-cols-[250px_1fr] h-screen">
       <div className="border-r">
-        <NotesList notes={notes} onDelete={onDelete} onNoteAdd={onNoteAdd} onToggleExpand={(id: number) => {
+        <NotesList notes={displayedNotes} onDelete={onDelete} onNoteAdd={onNoteAdd} onFilterNotes={onFilterClick} onToggleExpand={(id: number) => {
           setNotes(prev => 
             prev.map(n => n.id === id ? {...n, expanded: !n.expanded} : n)
           );

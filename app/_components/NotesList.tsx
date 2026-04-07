@@ -9,12 +9,14 @@ type NotesListParams = {
     onNoteAdd: () => void,
     onTagAdd: (_: number) => void,
     onTagDelete: (_: number, _2: string) => void,
+    onFilterNotes: () => void,
 };
 
-export default function NotesList({notes, onDelete, onToggleExpand, onSelect, onNoteAdd, onTagAdd, onTagDelete}: NotesListParams) {
+export default function NotesList({notes, onDelete, onToggleExpand, onSelect, onNoteAdd, onTagAdd, onTagDelete, onFilterNotes}: NotesListParams) {
     return (
         <div className="bg-gray-100 h-full text-center">
             <h1 className="text-4xl font-bold">Notes</h1>
+            <button onClick={onFilterNotes}>Filter</button>
             {notes.map(note => {
                 return <NoteEntry key={note.id} note={note} 
                             onToggleExpand={() => onToggleExpand(note.id)} 
