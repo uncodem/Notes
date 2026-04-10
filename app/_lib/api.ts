@@ -51,3 +51,13 @@ export async function removeTag(id: number, tag: string) {
     if (!res.ok) return {ok: false, error: "Network request failed"};
     return res.json();
 }
+
+export async function renameNote(id: number, new_title: string) {
+    const res = await fetch(`/api/notes/${id}/title`, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({title: new_title})
+    });
+    if (!res.ok) return {ok: false, error: "Network request failed"};
+    return res.json();
+}

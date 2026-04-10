@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import NotesList from "./_components/NotesList";
 import Editor from "./_components/Editor";
-import { Entry, EntryUI } from "./_lib/Entry";
+import { EntryUI } from "./_lib/Entry";
 import * as api from "@/app/_lib/api";
 
 async function save({
@@ -90,6 +90,21 @@ export default function Page() {
             .map((t) => t.trim().toLowerCase())
             .filter((t) => t !== "");
         setFilters(tags);
+    }
+
+    async function onRename(id: number, newTitle: string) {
+        const {ok, title, error} = await api.renameNote(id, newTitle);
+        if (!ok)  {
+            alert(error);
+            return;
+        }
+
+        setNotes(prev => 
+            prev.map(e => {
+                return e.id === id ? {...e, title} : e
+            })
+        );
+
     }
 
     async function onNoteAdd() {
@@ -203,7 +218,7 @@ export default function Page() {
                 />
             </div>
             <div>
-                <Editor currentNote={currentNote} onContentChange={(newContent: string) => {
+                <Editor currentNote={currentNote} onRename={onRename} onContentChange={(newContent: string) => {
                     setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: newContent} : n));
                 }}/>
             </div>

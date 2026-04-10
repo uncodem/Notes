@@ -5,7 +5,7 @@ import {EntryUI} from "../_lib/Entry";
 type EditorProps = {
     currentNote: EntryUI | null | undefined;
     onContentChange: (_: string) => void;
-    onRename: (newTitle: string) => void;
+    onRename: (id: number, newTitle: string) => void;
 };
 
 export default function Editor({currentNote, onRename, onContentChange}: EditorProps) {
@@ -16,9 +16,10 @@ export default function Editor({currentNote, onRename, onContentChange}: EditorP
     }
 
     function handleRename() {
+        if (!currentNote) return;
         const newTitle = prompt("Rename note: ", currentNote?.title);
         if (newTitle && newTitle.trim() !== "") {
-            onRename(newTitle);
+            onRename(currentNote.id, newTitle);
         }
     }
 
@@ -41,19 +42,5 @@ export default function Editor({currentNote, onRename, onContentChange}: EditorP
                 }
             </div>
         </div>
-        /*
-        <div className="flex flex-col h-full bg-white relative">
-            <button onClick={() => setPreview(!preview)} className="absolute top-2 right-4 px-3 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300 transition-colors z-10">
-                {preview ? "Edit" : "Preview"}
-            </button>
-            { preview ? (
-                <div className="w-full h-full prose dark:prose-invert max-w-none dark:bg-black p-4 overflow-y-auto pt-12">
-                    <ReactMarkdown>{currentNote.content}</ReactMarkdown>
-                </div>
-            ) :
-                (<textarea className="w-full h-full p-4 bg-white dark:text-white dark:bg-black resize-none outline-none" value={currentNote.content || ""} onChange={(e) => onContentChange(e.target.value)}/>)
-            }
-        </div>
-        */
     )
 }
