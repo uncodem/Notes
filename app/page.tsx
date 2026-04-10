@@ -182,7 +182,7 @@ export default function Page() {
 
     return (
         <div className="grid grid-cols-[250px_1fr] h-screen">
-            <div className="border-r">
+            <div className="border-r dark:border-white">
                 <NotesList
                     notes={displayedNotes}
                     onDelete={onDelete}

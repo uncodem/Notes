@@ -18,7 +18,7 @@ export default function NoteEntry({
     onTagDelete,
 }: NotesEntryParams) {
     return (
-        <div className="p-2 border-single border-2 border-white rounded-lg m-2 bg-gray-200">
+        <div className="p-2 border-single border-2 border-white dark:border-gray-800 rounded-lg m-2 bg-gray-200 dark:bg-gray-800 dark:text-gray-200">
             <div className="flex justify-between">
                 <button onClick={onDelete}>X</button>
                 <button onClick={onSelect}>{note.title}</button>

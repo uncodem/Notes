@@ -11,7 +11,7 @@ export default function Editor({currentNote, onContentChange}: EditorProps) {
     const [preview, setPreview] = useState(false);
 
     if (!currentNote) {
-        return <textarea className="w-full h-full p-4 bg-gray-50 resize-none outline-none" disabled={true} value="" placeholder="Select or create a note to start editing..."/>
+        return <textarea className="w-full h-full p-4 bg-gray-50 dark:bg-black dark:text-white resize-none outline-none" disabled={true} value="" placeholder="Select or create a note to start editing..."/>
     }
 
     return (
@@ -20,11 +20,11 @@ export default function Editor({currentNote, onContentChange}: EditorProps) {
                 {preview ? "Edit" : "Preview"}
             </button>
             { preview ? (
-                <div className="w-full h-full prose max-w-none p-4 overflow-y-auto pt-12">
+                <div className="w-full h-full prose dark:prose-invert max-w-none dark:bg-black p-4 overflow-y-auto pt-12">
                     <ReactMarkdown>{currentNote.content}</ReactMarkdown>
                 </div>
             ) :
-                (<textarea className="w-full h-full p-4 bg-white resize-none outline-none" value={currentNote.content || ""} onChange={(e) => onContentChange(e.target.value)}/>)
+                (<textarea className="w-full h-full p-4 bg-white dark:text-white dark:bg-black resize-none outline-none" value={currentNote.content || ""} onChange={(e) => onContentChange(e.target.value)}/>)
             }
         </div>
     )

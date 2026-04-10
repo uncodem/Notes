@@ -23,9 +23,9 @@ export default function NotesList({
     onFilterNotes,
 }: NotesListParams) {
     return (
-        <div className="bg-gray-100 h-full text-center">
-            <h1 className="text-4xl font-bold">Notes</h1>
-            <button onClick={onFilterNotes}>Filter</button>
+        <div className="bg-gray-100 dark:bg-black h-full text-center">
+            <h1 className="text-4xl font-bold dark:text-white">Notes</h1>
+            <button onClick={onFilterNotes} className="dark:text-white">Filter</button>
             {notes.map((note) => {
                 return (
                     <NoteEntry
@@ -41,7 +41,7 @@ export default function NotesList({
             })}
             <button
                 onClick={onNoteAdd}
-                className="p-2 border-single border-2 border-white rounded-lg m-2 bg-gray-200"
+                className="p-2 border-single border-2 border-white dark:border-black rounded-lg m-2 bg-gray-200 dark:bg-gray-800 dark:text-white"
             >
                 + Create Note
             </button>
