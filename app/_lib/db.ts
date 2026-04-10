@@ -34,6 +34,11 @@ const updateNoteEntry = db.prepare(`
     WHERE id = ? AND (updated_at IS NULL or updated_at < ?)
 `);
 
+const renameNoteEntry = db.prepare(`
+    UPDATE notes SET title = ?, updated_at = ?
+    WHERE id = ? 
+`);
+
 const insertTag = db.prepare(`
     INSERT INTO tags (name)
     VALUES (?)
@@ -131,3 +136,9 @@ export function addNewNote(title: string, updated_at: number) {
 export function updateNote(id: number, content: string, updated_at: number) {
     updateNoteEntry.run(content, updated_at, id, updated_at);
 }
+
+export function renameNote(id: number, title: string, updated_at: number) {
+    renameNoteEntry.run(title, updated_at, id);
+}
+
+
