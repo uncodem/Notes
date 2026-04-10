@@ -35,7 +35,7 @@ const updateNoteEntry = db.prepare(`
 `);
 
 const renameNoteEntry = db.prepare(`
-    UPDATE notes SET title = ?, updated_at = ?
+    UPDATE notes SET title = ?
     WHERE id = ? 
 `);
 
@@ -137,8 +137,8 @@ export function updateNote(id: number, content: string, updated_at: number) {
     updateNoteEntry.run(content, updated_at, id, updated_at);
 }
 
-export function renameNote(id: number, title: string, updated_at: number) {
-    renameNoteEntry.run(title, updated_at, id);
+export function renameNote(id: number, title: string) {
+    renameNoteEntry.run(title, id);
 }
 
 
