@@ -196,8 +196,8 @@ export default function Page() {
     }
 
     return (
-        <div className="grid grid-cols-[250px_1fr] h-screen">
-            <div className="border-r dark:border-white">
+        <div className="grid grid-cols-[250px_1fr] h-screen overflow-hidden bg-white dark:bg-gray-900 text-black dark:text-gray-100">
+            <div className="border-r dark:border-white custom-scrollbar h-full overflow-y-auto">
                 <NotesList
                     notes={displayedNotes}
                     onDelete={onDelete}
@@ -217,7 +217,7 @@ export default function Page() {
                     onTagDelete={onTagDelete}
                 />
             </div>
-            <div>
+            <div className="h-full min-w-0">
                 <Editor currentNote={currentNote} onRename={onRename} onContentChange={(newContent: string) => {
                     setNotes(prev => prev.map(n => n.id === selectedNote ? {...n, content: newContent} : n));
                 }}/>
